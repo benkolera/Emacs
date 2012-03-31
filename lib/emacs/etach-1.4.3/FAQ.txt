@@ -1,0 +1,424 @@
+	   FAQ.txt -- Frequently Asked Questions for Etach
+
+----------------------------------------------------------------------
+GENERAL INFORMATION
+----------------------------------------------------------------------
+
+Q. Where is etach?
+
+A. You can find information on etach on the Web at:
+
+     http://rulnick.com/etach/
+
+   You can download etach from:
+
+     http://rulnick.com/etach/download/
+
+   You can sign up for the new-version-notification mailing list by
+   sending an email request to the author, etach@rulnick.com.  Include
+   the word "etach" somewhere in the "Subject:" line of any message
+   sent to this address or your message may be discarded by the mail
+   filter.
+
+----------------------------------------------------------------------
+
+Q. I've just retrieved etach.  What should I do?  Where should I
+   begin?
+
+A. Please read the file README.txt.  Next read INSTALL.txt, then
+   INSTALL-TEST.txt.  If you're replacing an earlier version, see
+   CHANGELOG.txt.
+
+----------------------------------------------------------------------
+
+Q. To whom should I send bug reports, comments, and the like?
+
+A. Please send email to the author: etach@rulnick.com.  Include the
+   word "etach" somewhere in the "Subject:" line of any message sent
+   to this address or your message may be discarded by the mail
+   filter.
+
+----------------------------------------------------------------------
+
+Q. Is there a mailing list for announcements of new etach versions?
+
+A. Yes.  To receive announcements of new etach versions, please send
+   an email request to the author: etach@rulnick.com.  Be sure to
+   include the word "etach" somewhere in the "Subject:" line or your
+   message may be discarded by the mail filter.
+
+----------------------------------------------------------------------
+OPERATIONAL INFORMATION
+----------------------------------------------------------------------
+
+Q. Can etach handle multiple attachments, nested MIME parts, and the
+   like?
+
+A. Yes, the more, the merrier.  And remember that M-x mime-forward (or
+   just "F" if you set up the define-keys described in INSTALL.txt) is
+   available for forwarding messages that contain attachments.  And
+   you can add attachments to mime-forward'ed messages.  You can also
+   continue adding text to the text/plain section(s) after attach-ing
+   (just be sure to always leave a blank line between the "Content-"
+   headers and your message text, and be careful about adding 8-bit
+   characters -- see README.txt).  Etc.
+
+----------------------------------------------------------------------
+
+Q. I want to modify, or at least confirm, the file names used for
+   detachments, and I want to be able to optionally cancel individual
+   detachments.
+
+A. O.K., add this (or equivalent custom-set-variables entry) to your
+   startup file:
+
+     (setq etach-prompt-me-for-file-names t)
+
+----------------------------------------------------------------------
+
+Q. Can etach wrap long lines and convert ^M newlines to "clean"
+   ^J newlines on decoded inline plain text?
+
+A. Yes.  Add one or both of these (or equivalent custom-set-variables
+   entry) to your startup file:
+
+     (setq etach-fill-decoded-plain-text t)
+     (setq etach-clean-decoded-plain-text t)
+
+   These settings are a matter of taste.  Setting these to nil (the
+   default) instructs etach to just leave the text as it is.  (This
+   setting does NOT affect detached files; it only affects text/plain
+   matter decoded and displayed in place.)
+
+   Note that the variable etach-adjust-decoded-plain-text is obsolete
+   as of etach version 1.1.6, replaced by the two variables described
+   above.
+
+----------------------------------------------------------------------
+
+Q. How can I make etach work faster?
+
+A. Etach's commands should operate more-or-less instantly on any input
+   and for almost any system.  If any particular command is operating
+   too slowly, please send a bug report (see later in this file).
+
+   That said, you can try byte-compiling:
+
+     M-x byte-compile-file RET etach.el RET
+
+   This will create the compiled Lisp file etach.elc, which will be
+   loaded instead of etach.el if found by Emacs in the same directory
+   (assuming you don't specify an extension in your load command).  Of
+   course, you will therefore need to remember to delete the .elc file
+   and/or re-compile when you install new versions of etach.
+
+   You may need to use (eval-when-compile (require 'rmail)) or similar
+   before byte-compiling, if your Emacs session has not yet loaded
+   RMAIL.
+
+----------------------------------------------------------------------
+
+Q. I would like to include (or not include) all mail headers when I
+   forward a message using mime-forward.  Is this possible?
+
+A. Certainly.  Just toggle the headers (you should be able to do this
+   with the "t" key, or M-x rmail-toggle-header) immediately before
+   invoking mime-forward.
+
+----------------------------------------------------------------------
+
+Q. Can etach help me to deal with unsolicited mail messages (spam)?
+
+A. Yes.  Just type C-u before invoking mime-forward (do this when
+   viewing the unsolicited message in RMAIL mode).  Etach will do its
+   best to construct a mail abuse report nearly ready to send.  You
+   should edit the addresses (in many cases you will not want to send
+   the spam report to all of the addresses in the default "To:" list
+   established by mime-forward) and edit the message as appropriate,
+   and then send it.  You can customize this functionality by setting
+   variables like etach-spam-message, etach-spam-host-exclude-list,
+   and etach-spam-message-subject-string.  At the very least you
+   should add your local host and domain names to the
+   etach-spam-host-exclude-list, i.e., put something like
+
+     (setq etach-spam-host-exclude-list 
+           '("localhost" "mydomain.com" "myhost.mydomain.com"))
+
+   into your startup file.
+
+----------------------------------------------------------------------
+
+Q. How does etach decide which MIME parts to write to files and which
+   to decode in place?
+
+A. Loosely, if the MIME part headers specify that the content is
+   text/plain and they provide no file name (name="..." or
+   filename="...") then the part is decoded in place.  Otherwise the
+   part is written to a file.
+
+----------------------------------------------------------------------
+
+Q. How can I add Emacs point-and-click menu items for etach?
+
+A. Add something like the following to your startup file:
+
+    (require 'sendmail)
+
+    ; menu entry for mail mode
+
+    (define-key mail-mode-map [menu-bar etach]
+      (cons "Etach" (make-sparse-keymap "Etach")))
+
+    (define-key mail-mode-map [menu-bar etach attach]
+      '("Attach" . etach-attach))
+
+    ; menu entry for rmail mode
+
+    (define-key rmail-mode-map [menu-bar etach]
+      (cons "Etach" (make-sparse-keymap "Etach")))
+
+    (define-key rmail-mode-map [menu-bar etach mime-forward]
+      '("MIME-Forward" . etach-mime-forward))
+
+    (define-key rmail-mode-map [menu-bar etach detach]
+      '("Detach" . etach-detach))
+
+    ; menu entry for rmail-summary mode
+
+    (define-key rmail-summary-mode-map [menu-bar etach]
+      (cons "Etach" (make-sparse-keymap "Etach")))
+
+    (define-key rmail-summary-mode-map [menu-bar etach mime-forward]
+      '("MIME-Forward" . etach-mime-forward))
+
+    (define-key rmail-summary-mode-map [menu-bar etach detach]
+      '("Detach" . etach-detach))
+
+----------------------------------------------------------------------
+
+Q. I want to define convenience keys without first doing a "require"
+   or "load" (e.g., (require 'rmail) or (load "rmailsum")).  Is there
+   a way?
+
+A. Yes.  Here is an excerpt from a message I received from Francis
+   Bond:
+
+     [This] gives a way to add the commands to the various mode-maps
+     (and menus) without having to first load rmail.
+
+     Note, I use 'M' not 'D', as I am afraid I might hit 'd' by
+     mistake!  Please feel free to change it to 'D' if you prefer.
+
+     (add-hook
+	  'rmail-mode-hook
+	  (lambda ()
+	    (define-key rmail-mode-map "M" 'detach)
+	    (define-key rmail-mode-map [menu-bar mail detach]
+	      '("Mime Detach" . detach))
+	    (define-key rmail-mode-map "F" 'mime-forward)
+	    (define-key rmail-mode-map [menu-bar mail mime-forward]
+	      '("Mime Forward" . mime-forward))))
+     (add-hook
+	  'rmail-summary-mode-hook
+	  (lambda ()
+	    (define-key rmail-summary-mode-map "F" 'mime-forward)
+	    (define-key rmail-summary-mode-map "M" 'detach)))
+
+   And here is an alternative that I received from Edward Welbourne:
+
+     [This] will execute the commands once, when the mode is loaded,
+     rather than executing the commands every time you open a new
+     rmail file:
+
+     (eval-after-load 'rmail
+       '(progn
+	  (define-key rmail-mode-map "F" 'mime-forward)
+	  (define-key rmail-mode-map "K" 'kill-label-detached)
+	  (define-key rmail-mode-map "D" 'detach)))
+
+     (eval-after-load 'rmail-summary
+       '(progn
+	  (define-key rmail-summary-mode-map "F" 'mime-forward)
+	  (define-key rmail-summary-mode-map "K" 'kill-label-detached)
+	  (define-key rmail-summary-mode-map "D" 'detach)))
+
+----------------------------------------------------------------------
+
+Q. Can I view attachment status and other etach-related information in
+   the RMAIL-summary buffer?
+
+A. I've developed some mods for rmailsum.el that indicate the presence
+   of attachments, whether they've been detached, the existence of
+   other "etach-detachable" content, whether messages have been
+   replied to, forwarded, or edited, etc.  It's alpha stuff at this
+   writing (2009-03-13) but I use it every day.  If you would like to
+   use it and know how to patch and load an elisp file, send me a
+   message (please see above for how to contact the author).
+   Remember, it's alpha; be sure to back up all of your mail before,
+   and frequently while, using it.
+
+
+----------------------------------------------------------------------
+PROBLEMS
+----------------------------------------------------------------------
+
+Q. I'm using an early version of Emacs 19 (or using Emacs 18, or 17,
+   or...) and things aren't working.  What should I do?
+
+A. Versions of etach prior to 1.1.2 were only partly functional on
+   some versions of Emacs prior to Emacs 20.  Etach 1.1.2 included
+   rewrites for, and testing under, Emacs 19.34.  If you are using the
+   latest version of etach and are having problems with it under any
+   version of Emacs, please let me know.
+
+----------------------------------------------------------------------
+
+Q. Etach doesn't seem to work as expected.  What should I do?
+
+A. Please send me a bug report.  Useful stuff to include in your
+   message, if possible:
+
+   - A description of the behavior you expected from etach, and the
+     behavior you observed.
+
+   - The version of etach you are using (M-x etach-version RET).
+
+   - Your Emacs version (M-x version RET) and operating system.
+
+   - The contents of your *Messages* buffer immediately after the
+     problem or unexpected behavior occurs.
+
+   - Emacs' debug messages, if you're getting an error message of some
+     kind.  Please set the debug-on-error variable to t (M-x
+     set-variable RET debug-on-error RET t RET) and then re-execute
+     the sequence of commands that generates the error.  This should
+     cause Emacs to produce a little bit of debugging information in a
+     new buffer.  Please send me the contents of this buffer.
+
+   - The mail message(s) that generate the problem.  Please include
+     the headers, but of course do not include any personal or
+     sensitive data.  (Please don't send any large file (>1MB)
+     attachments unless they are necessary to demonstrate the
+     unexpected or undesirable behavior in etach.)
+
+   - The contents of the "etach-debug" buffer.  This is very useful,
+     so please include it if you can.  In order to have an 
+     etach-debug buffer you need to set the variable "etach-debug" to
+     "t":
+
+       M-x set-variable RET etach-debug RET t RET
+
+     Then whenever you do an attach, detach, or mime-forward, a
+     transcript of etach's operation will be written to the
+     etach-debug buffer.  It is likely that without this information I
+     will not be able to track down the problem, so please include the
+     contents of the etach-debug buffer if at all possible.
+
+   If you can't send all of these things, that's o.k.  Just send me
+   whatever information you can about the problem.  Thank you.
+
+----------------------------------------------------------------------
+
+Q. I sent myself a test message with an attachment, but "M-x detach"
+   doesn't seem to have any effect on the received message.  Why are
+   the attachments not detached?
+
+A. First, check that the Content- headers (especially Content-Type and
+   Content-Transfer-Encoding) are visible in the RMAIL buffer.  If
+   not, Emacs may have hidden them according to the customizable
+   variable rmail-ignored-headers (C-h v rmail-ignored-headers RET)
+   (e.g., they are hidden by default in Emacs 21.1.1).  You should
+   take the expressions "^content-type:" and
+   "^content-transfer-encoding:" (or "^content-.*:") out of your
+   string of ignored headers in this case, probably via a
+   custom-set-variables or setq directive in your startup file.  While
+   it is in theory possible for me to modify etach to still work even
+   when these headers are hidden, there are some tricky buffer and
+   window display issues involved and, as a result, all of the methods
+   I've tried have undesirable side effects.  So until I find another
+   way, please make these headers visible by the method just
+   described, or use the "t" key (or "M-x rmail-toggle-header") just
+   before you detach.  (Also, note that Emacs may require you to
+   toggle the headers on-and-off once for each existing message after
+   editing the rmail-ignored-headers string.)
+
+   It is also possible that the problem occurred on the sending side,
+   and that another Emacs component is interfering with your MIME mail
+   sending.  In particular, the Content-Type header may be modified by
+   another component when you send mail.  (If this is the case, you
+   will probably see a change in the headers from what they were when
+   you sent the message; note the headers before you send, then switch
+   back to the *mail* buffer after sending the message and have a
+   look.)  To fix this, try putting the following into your startup
+   file (e.g., ~/.emacs):
+
+    (custom-set-variables
+     '(mail-setup-hook nil)
+     '(mail-send-hook nil))
+
+   Reload the file (or restart emacs) and then try the
+   attach/send/detach test again.  Of course, you'll want to replace
+   "nil" above with any special non-trouble-causing hooks you may have
+   installed -- but just plain nil should allow you to test whether
+   something is interfering with etach's MIME message composition.
+
+   If you want to have a careful look at the stuff that's getting
+   loaded by emacs, see the load history:
+
+     C-h v load-history RET
+
+   If none of the above gets detach working, or if you have questions,
+   please contact me with the details (see above).
+
+----------------------------------------------------------------------
+
+Q. I sent myself a test message with multiple attachments, but "M-x
+   detach" does not produce the expected detachments.  What's wrong?
+
+A. Please see the answer to the preceding question.
+
+----------------------------------------------------------------------
+
+Q. I'm having trouble attaching or detaching one particular kind of
+   file.  What is causing the problem?
+
+A. Some file types have associated "hooks" in emacs -- functions that
+   are called automatically in certain modes, for example.  It is
+   possible that some hook is causing trouble.  Please see if there
+   are any hooks being invoked when you visit or write files of the
+   problem type.  If that doesn't help you fix the problem, please
+   send a bug report (see above).
+
+----------------------------------------------------------------------
+
+Q. I get error messages saying that the function definition for
+   base64-encode-region or base64-decode-region is void.  What's
+   wrong?
+
+A. These functions may not be provided in some versions of Emacs.  Do
+   you have the command "mimencode" available on your system?  If so,
+   try the following:
+
+     M-x set-variable RET etach-use-mimencode RET t RET
+
+   Then retry the attach or detach (whichever caused the error).  If
+   it now works correctly, add the following or an equivalent
+   custom-set-variables entry to your startup file:
+
+     (setq etach-use-mimencode t)
+
+   If you don't have mimencode, you will have to get it or upgrade
+   Emacs so that the base64- functions are provided.  (I've received
+   one report that the old "mmencode" works, too; if you have
+   mmencode, you can use the above after linking mimencode to mmencode
+   with with ln -s.)
+
+----------------------------------------------------------------------
+
+Q. Does etach support mbox format for mail files?
+
+A. Not presently (2009-03-13), as etach was designed specifically to
+   deal with RMAIL's babyl format.  I will assess the need when the
+   next version of Emacs is released.
+
+----------------------------------------------------------------------

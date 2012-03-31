@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: perl-moose-dbic-resultset
+# key: pmdbicrs
+# --
+package $1::Schema::ResultSet::$2;
+
+use strict;
+use warnings;
+use parent qw/DBIx::Class::ResultSet/;
+
+use MooseX::Method::Signatures;
+use DateTime;
+
+$0
+
+1;

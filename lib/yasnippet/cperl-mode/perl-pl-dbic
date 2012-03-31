@@ -1,0 +1,22 @@
+# -*- mode: snippet -*-
+# name: perl-pl-dbic
+# key: pldbic
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+#!/usr/bin/perl 
+use strict;
+use warnings;
+use autodie;
+
+use iseek::DBIC::WIGI;
+use DateTime::Format::Natural;
+use Getopt::Long;
+
+my ();
+
+GetOptions(
+) or die "Invalid options";
+
+my $ymd  = DateTime->now( time_zone => 'local' )->ymd;
+my $dbic = iseek::DBIC::WIGI->get_connection();
+

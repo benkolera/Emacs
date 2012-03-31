@@ -1,0 +1,63 @@
+# -*- mode: snippet -*-
+# name: perl-module
+# key: pmodule
+
+# --
+package $1
+
+use strict;
+use warnings;
+use autodie;
+
+our $VERSION = '0.01';
+
+$0
+
+1;
+
+__END__
+
+=head1 NAME
+
+$1
+
+=head1 VERSION
+
+Version 0.01
+
+=cut
+
+=head1 SYNOPSIS
+
+$2
+
+=cut
+
+=head1 DESCRIPTION
+
+$3
+
+=cut
+
+=head1 FUNCTIONS
+
+=cut
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+perldoc $1
+
+=head1 ACKNOWLEDGEMENTS
+
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright `(date-y)` iseek Communications, all rights reserved.
+
+This program is released under the following license: restrictive
+
+=cut
+
+1; # End of $1

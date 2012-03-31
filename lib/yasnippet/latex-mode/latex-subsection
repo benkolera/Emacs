@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: latex-subsection
+# key: ssec
+# binding: direct-keybinding
+# --
+\subsection{$1}
+
+$0

@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: perl-moose-has
+# key: pmhas
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+
+=head2 $1
+
+    is  : ${2:ro}
+    isa : $3
+    required: ${4:1}
+
+$5
+
+=cut
+
+  has $1 => (
+    is => '$2',
+    isa => '$3',
+    required => $4,
+  );
+
+$0

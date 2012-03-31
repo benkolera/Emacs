@@ -1,0 +1,122 @@
+This file contains modifications and suggestions contributed by etach
+users.
+
+----------------------------------------------------------------------
+
+Contributed by David J. Biesack:
+
+If you customize "Etach Detachment Default Directory" to something
+like ~/attachments on Windows emacs, etach does not expand the path
+name and in this case saves the attachment in u:/RMAIL/~/attachments:
+
+[ file: u:/RMAIL/~/attachments/etach.el ]
+
+I fixed this with the following patch:
+
+*** etach.el.orig       Thu Feb 14 12:57:27 2002
+--- etach.el    Thu Feb 14 13:03:05 2002
+***************
+*** 1012,1026 ****
+        (setq Ff F)
+        (setq Fe ""))
+        (setq Fcopy (concat Ff Fe))
+!       (setq default-directory
+!           (concat
+!            (if (string-match "^/" etach-detachment-default-directory)
+!                ""
+!              default-directory)
+!            etach-detachment-default-directory
+!            (if (string-match "/$" etach-detachment-default-directory)
+!                ""
+!              "/")))
+        (etach-debug-msg (concat "default directory set to: " default-directory))
+        (if (not (file-exists-p default-directory))
+          (progn
+--- 1012,1020 ----
+        (setq Ff F)
+        (setq Fe ""))
+        (setq Fcopy (concat Ff Fe))
+!       (setq default-directory (expand-file-name etach-detachment-default-directory))
+!       (if (not (string-match "/$" default-directory))
+!           (setq default-directory (concat default-directory "/")))
+        (etach-debug-msg (concat "default directory set to: " default-directory))
+        (if (not (file-exists-p default-directory))
+          (progn
+
+With this patch, etach correct detaches an attachment to my
+c:/djb/attachments folder (HOME is c:/djb and I customize
+etach-detachment-default-directory to ~/attachments)
+
+i.e. when I email etach to myself as an attachment, it detaches as:
+
+[ file: c:/djb/attachments/etach.el ]
+
+----------------------------------------------------------------------
+
+Contributed by Wolfgang Polak:
+
+I use it in an environment where most folks send mail through MS
+Exchange and virtually every message arrives as html WITHOUT the plain
+ascii.  Even though you make it pretty easy to pop back to the
+browser, I was getting tired of that.  So I added the following hack
+
+(if (fboundp 'detached-file-insert-hook) (detached-file-insert-hook F))
+
+in etach-mime-decode right after the "[file:/blah/blah.blah]" gets
+inserted in the buffer.
+
+Then in my .emacs I define
+
+(defun detached-file-insert-hook (file)
+  (if (or (string-equal (substring file -5) ".html")
+          (string-equal (substring file -4) ".htm"))
+      (progn
+        (insert "\n")
+        (call-process "/usr/bin/lynx" nil t nil "-dump" file)
+        (insert "\n"))
+    ))
+
+Seems to work great and if I need a better rendering, I can still
+C-c C-u.
+
+----------------------------------------------------------------------
+
+Contributed by the first user of etach:
+
+This small hacked excerpt from ffap.el allows quick and easy removal
+of detached files right from the comfort of your RMAIL buffer.  Put
+this into your .emacs file and then just point, click, C-c C-r to
+remove unwanted detachments:
+
+(require 'ffap)
+
+(defun etach-remove-file-at-point ()
+  "Remove file at point.
+This is a hack of find-file-at-point, useful for quickly purging
+unwanted detached files."
+  (interactive)
+  (setq filename (etach-rfap-prompter))
+  (if (file-exists-p (expand-file-name filename))
+      (progn
+	(delete-file (expand-file-name filename))
+	(message (concat (expand-file-name filename) " removed")))
+    (message (concat "file does not exist: " (expand-file-name filename)))))
+
+(defun etach-rfap-prompter (&optional guess)
+  ;; Does guess and prompt step for find-file-at-point.
+  ;; Extra complication for the temporary highlighting.
+  (unwind-protect
+      ;; This catch will let ffap-alist entries do their own prompting
+      ;; and then maybe skip over this prompt (ff-paths, for example).
+      (catch 'ffap-prompter
+	(ffap-read-file-or-url
+	 "Remove file: "
+	 (prog1
+	     (setq guess (or guess (ffap-guesser))) ; using ffap-alist here
+	   (and guess (ffap-highlight))
+	   )))
+    (ffap-highlight t)))
+
+(global-set-key "\C-c\C-r" 'etach-remove-file-at-point)
+
+----------------------------------------------------------------------

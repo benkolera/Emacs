@@ -1,0 +1,43 @@
+# -*- mode: snippet -*-
+# name: perl-dbic-result
+# key: pdbicres
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+package $1;
+
+use strict;
+use warnings;
+
+use Moose;
+use MooseX::NonMoose;
+use namespace::autoclean;
+extends 'DBIx::Class::Core';
+
+__PACKAGE__->load_components("InflateColumn::DateTime");
+
+=head1 NAME
+
+$1 - $2
+
+=cut
+
+__PACKAGE__->table("$3");
+
+=head1 ACCESSORS
+
+=cut 
+
+__PACKAGE__->add_columns(
+$0
+);
+__PACKAGE__->set_primary_key();
+
+=head1 RELATIONS
+
+
+=cut
+
+
+__PACKAGE__->meta->make_immutable;
+
+1;

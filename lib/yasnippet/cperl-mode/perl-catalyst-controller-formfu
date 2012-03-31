@@ -1,0 +1,86 @@
+# -*- mode: snippet -*-
+# name: perl-catalyst-controller-formfu
+# key: pccff
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+package ${1:iseek::}Controller::$2;
+use Moose;
+use namespace::autoclean;
+
+BEGIN {extends 'Catalyst::Controller::HTML::FormFu'; }
+
+=head1 NAME
+
+$1::Controller::$2 - Catalyst Controller
+
+=head1 DESCRIPTION
+
+Catalyst Controller.
+
+=head1 METHODS
+
+=cut
+
+=head2 index
+
+=cut
+
+sub base :Chained('/') :PathPart('$3') :CaptureArgs(0) {
+  my ($self, $c) = @_;
+    
+  $c->stash(resultset => $c->model('DB::$2'));
+
+}
+
+sub list :Chained('base') :PathPart('list') :Args(0) {
+  my ($self, $c) = @_;
+  $c->stash( $4 => $c->stash->{resultset}->all() );
+}
+
+sub id :Chained('base') :PathPart('') :CaptureArgs(1) {
+  my ($self, $c ,$id) = @_;
+  $c->stash( $5 => $c->stash->{resultset}->find( $id ) );
+}
+
+sub edit :Chained('id') :PathPart('edit') :Args(0) : FormConfig {
+  my ($self, $c ,$id) = @_;
+}
+
+sub edit_FORM_VALID {
+  my ( $self, $c ) = @_;
+  
+  my $v = $c->stash->{vacancy};
+  
+  $c->stash->{form}->model->update( $v );
+  
+  $c->response->redirect( $c->uri_for('/$3' , 'list' ) );
+}
+    
+sub edit_FORM_NOT_SUBMITTED {
+  my ( $self, $c ) = @_;
+  
+  $c->stash->{form}->model->default_values(
+    $c->stash->{$5}
+  );
+}
+    
+sub edit_FORM_RENDER {
+  my ( $self, $c ) = @_;
+
+}
+
+
+=head1 AUTHOR
+
+Ben Kolera,,,
+
+=head1 LICENSE
+
+This library is free software. You can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
+__PACKAGE__->meta->make_immutable;
+
+1;

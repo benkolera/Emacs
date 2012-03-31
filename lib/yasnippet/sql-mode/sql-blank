@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: sql-blank
+# key: sqlblank
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+BEGIN;
+
+-- RT: $1
+
+$0
+
+COMMIT;

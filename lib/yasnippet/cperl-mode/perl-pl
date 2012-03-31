@@ -1,0 +1,59 @@
+# -*- mode: snippet -*-
+# name: perl-pl
+# key: plnew
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+#!/usr/bin/perl 
+use strict;
+use warnings;
+use ${1:iseek::};
+use TryCatch;
+
+use Getopt::Long;
+use Pod::Usage;
+
+my %options;
+
+GetOptions(
+   \%options,
+   'help|?',
+   
+) or pod2usage(1);
+
+pod2usage(1) if $options{help};
+
+my $$2;
+try{
+  $$2 = $1->new(%options);
+} catch ($e) {
+  pod2usage($e);
+};
+
+$$2->$3();
+
+__END__
+
+=head1 NAME
+
+`(car (last (split-string buffer-file-name "/")))` - $4
+
+=head1 SYNOPSIS
+
+`(car (last (split-string buffer-file-name "/")))` --help | <options>
+
+    Options:
+
+
+$5
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Print a brief help message and exits.
+
+=back
+
+=cut

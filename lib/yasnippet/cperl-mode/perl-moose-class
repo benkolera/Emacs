@@ -1,0 +1,68 @@
+# -*- mode: snippet -*-
+# name: perl-moose-class
+# key: pmclass
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+use 5.008;
+use MooseX::Declare;
+our $VERSION = '0.01';
+
+=head1 NAME
+
+${1:iseek::} - $2
+
+=head1 VERSION
+
+Version 0.01
+
+=cut
+
+=head1 SYNOPSIS
+
+    my $$3 = $1->new(
+    );
+
+=head1 DESCRIPTION
+
+$4
+
+=head1 INHERITANCE / ROLES
+
+=head2 INHERITS FROM
+
+None
+
+=head2 ROLES
+
+None
+
+=head1 ATTRIBUTES
+
+=cut
+
+class $1 {
+
+  $0
+
+}
+
+__END__
+
+
+=head1 AUTHOR
+
+Ben Kolera, C<< <bkolera at iseek.com> >>
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc $1
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 iseek Communications Pty Ltd.
+
+This program is released under the following license: restrictive
+
+=cut

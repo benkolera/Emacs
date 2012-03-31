@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: sql-insert
+# key: sqlins
+# --
+INSERT INTO $1 ($2) VALUES ($3);
+$0

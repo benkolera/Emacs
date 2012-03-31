@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: perl-moose-method
+# key: pmmeth
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+=head2 $1 ( $2 )
+
+$3
+
+=cut
+
+  method $1( $2 ) {
+    $0
+  }

@@ -1,0 +1,28 @@
+# -*- mode: snippet -*-
+# name: perl-moose-has-lazy
+# key: pmhasl
+# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# --
+
+=head2 $1
+
+    is  : ${2:ro}
+    isa : $3
+    required: ${4:1}
+
+$5
+
+=cut
+
+  has $1 => (
+    is => '$2',
+    isa => '$3',
+    required => $4,
+    lazy_build => 1,
+  );
+
+  method _build_$1() {
+    $6
+  }
+
+$0
